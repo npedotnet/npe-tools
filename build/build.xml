@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="npe-tools" default="all" basedir=".">
+
+	<property name="version" value="1.0"/>
+	<property name="src" value="../src"/>
+	<property name="dest" value="dest"/>
+	<property name="jarfile" value="${ant.project.name}-${version}.jar"/>
+	
+	<property name="npe.image.library.url" value="https://github.com/npedotnet/npedotnet.github.io/blob/master/archives/npe-image-library-1.0.jar?raw=true"/>
+	<property name="npe.image.library.jar" value="npe-image-library-1.0.jar"/>
+	
+	<property name="npe.baggage.url" value="https://github.com/npedotnet/npedotnet.github.io/blob/master/archives/npe-baggage-1.0.jar?raw=true"/>
+	<property name="npe.baggage.jar" value="npe-baggage-1.0.jar"/>
+	
+	<property name="npe.base.url" value="https://github.com/npedotnet/npedotnet.github.io/blob/master/archives/npe-base-1.0.jar?raw=true"/>
+	<property name="npe.base.jar" value="npe-base-1.0.jar"/>
+	
+	<property name="bat.dir" value="${ant.project.name}-bat-${version}"/>
+	<property name="bat.zip" value="${bat.dir}.zip"/>
+	
+	<property name="sh.dir" value="${ant.project.name}-sh-${version}"/>
+	<property name="sh.zip" value="${sh.dir}.zip"/>
+	
+	<target name="all" depends="bat, sh"/>
+	
+	<target name="bat" depends="jar">
+		<mkdir dir="${bat.dir}/bin"/>
+		<copy file="${jarfile}" todir="${bat.dir}/bin"/>
+		<copy file="${npe.base.jar}" todir="${bat.dir}/bin"/>
+		<copy file="${npe.baggage.jar}" todir="${bat.dir}/bin"/>
+		<copy file="${npe.image.library.jar}" todir="${bat.dir}/bin"/>
+		<copy todir="${bat.dir}/bin">
+			<fileset dir="../bin/bat"/>
+		</copy>
+		<zip destfile="${bat.zip}" basedir="." includes="${bat.dir}/bin/*"/>
+	</target>
+	
+	<target name="sh" depends="jar">
+		<mkdir dir="${sh.dir}/bin"/>
+		<copy file="${jarfile}" todir="${sh.dir}/bin"/>
+		<copy file="${npe.base.jar}" todir="${sh.dir}/bin"/>
+		<copy file="${npe.baggage.jar}" todir="${sh.dir}/bin"/>
+		<copy file="${npe.image.library.jar}" todir="${sh.dir}/bin"/>
+		<copy todir="${sh.dir}/bin">
+			<fileset dir="../bin/sh"/>
+		</copy>
+		<zip destfile="${sh.zip}" basedir="." includes="${sh.dir}/bin/*"/>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar jarfile="${jarfile}" basedir="${dest}"/>
+	</target>
+	
+	<target name="compile" depends="preprocess">
+		<javac srcdir="${dest}" destdir="${dest}" classpath="${npe.image.library.jar};${npe.baggage.jar};${npe.base.jar}" includeantruntime="false"/>
+	</target>
+	
+	<target name="preprocess">
+		<mkdir dir="${dest}"/>
+		<copy todir="${dest}">
+			<fileset dir="${src}"/>
+		</copy>
+		<get src="${npe.image.library.url}" dest="."/>
+		<get src="${npe.baggage.url}" dest="."/>
+		<get src="${npe.base.url}" dest="."/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${dest}"/>
+		<delete file="${npe.image.library.jar}"/>
+		<delete file="${npe.baggage.jar}"/>
+		<delete file="${npe.base.jar}"/>
+		<delete file="${jarfile}"/>
+		<delete dir="${bat.dir}"/>
+		<delete file="${bat.zip}"/>
+		<delete dir="${sh.dir}"/>
+		<delete file="${sh.zip}"/>
+	</target>
+
+</project>
